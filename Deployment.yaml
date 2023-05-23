@@ -16,11 +16,8 @@ spec:
         app: laravel10
     spec:
       containers:
-      - image: docker.io/franckabdullah/laravel10:4
+      - image: docker.io/franckabdullah/laravel10:5
         name: laravel10
-        volumeMounts:
-        - mountPath: "/app"
-          name: www
         resources:
           requests:
             memory: "60Mi"
@@ -33,8 +30,6 @@ spec:
         volumeMounts:
         - mountPath: /etc/nginx/conf.d
           name: nginx-config
-        - mountPath: "/var/www/html"
-          name: www
         resources:
           requests:
             memory: "60Mi"
@@ -42,16 +37,6 @@ spec:
           limits:
             memory: "128Mi"
             cpu: "2m"
-      initContainers:
-      - name: copy-app-files
-        image: docker.io/franckabdullah/laravel10:docker_tag
-        command:
-          - "sh"
-          - "-c"
-          - "cp -r /app/* /data"
-        volumeMounts:
-        - mountPath: "/data"
-          name: www
       volumes:
       - name: nginx-config
         configMap:
@@ -59,8 +44,4 @@ spec:
           items:
           - key: conf
             path: default.conf
-      - name: www
-        emptyDir:
-          sizeLimit: 500Mi
-
 status: {}
