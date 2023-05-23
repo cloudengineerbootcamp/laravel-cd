@@ -44,7 +44,7 @@ spec:
             cpu: "2m"
       initContainers:
       - name: copy-app-files
-        image: docker.io/franckabdullah/laravel10:4
+        image: docker.io/franckabdullah/laravel10:docker_tag
         command:
           - "sh"
           - "-c"
