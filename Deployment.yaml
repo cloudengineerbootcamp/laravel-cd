@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: laravel10
+  name: laravel10
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: laravel10
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: laravel10
+    spec:
+      containers:
+      - image: docker.io/franckabdullah/laravel10:4
+        name: laravel10
+        volumeMounts:
+        - mountPath: "/app"
+          name: www
+        resources:
+          requests:
+            memory: "60Mi"
+            cpu: "1m"
+          limits:
+            memory: "128Mi"
+            cpu: "2m"
+      - image: nginx:stable-alpine3.17-slim
+        name: nginx-laravel10
+        volumeMounts:
+        - mountPath: /etc/nginx/conf.d
+          name: nginx-config
+        - mountPath: "/var/www/html"
+          name: www
+        resources:
+          requests:
+            memory: "60Mi"
+            cpu: "1m"
+          limits:
+            memory: "128Mi"
+            cpu: "2m"
+      initContainers:
+      - name: copy-app-files
+        image: docker.io/franckabdullah/laravel10:4
+        command:
+          - "sh"
+          - "-c"
+          - "cp -r /app/* /data"
+        volumeMounts:
+        - mountPath: "/data"
+          name: www
+      volumes:
+      - name: nginx-config
+        configMap:
+          name: nginx-config
+          items:
+          - key: conf
+            path: default.conf
+      - name: www
+        emptyDir:
+          sizeLimit: 500Mi
+
+status: {}
